@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('produits', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle')->unique();
+            $table->string('libelle');
             $table->string('marque');
-            $table->double('prixunit', 8, 2);
+            $table->decimal('prixunit', 10, 2);
             $table->integer('quantite');
             $table->date('date_peremption');
             $table->string('image');
-            $table->enum('statut', ['dispo', 'indispo'])->default('dispo');
-            $table->foreignId('id_categorie')->constrained('categories')->onDelete('cascade');
+            $table->boolean('statut')->default(true);
+            $table->foreignId('id_categorie')->constrained('categories');
             $table->timestamps();
         });
 

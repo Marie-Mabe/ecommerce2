@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('paniers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
-            $table->double('prixTotal', 8, 2);
+            $table->foreignId('id_user')->constrained('users');
+            $table->decimal('prixTotal', 10, 2)->default(0);
             $table->timestamps();
         });
 
