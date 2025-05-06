@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('articlepaniers', function (Blueprint $table) {
+        Schema::create('article_paniers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_produit')->constrained('produits')->onDelete('cascade');
-            $table->foreignId('id_panier')->constrained('paniers')->onDelete('cascade');
-            $table->integer('quantite');
-            $table->double('prixTotal', 8, 2);
+            $table->foreignId('id_panier')->constrained('paniers')->cascadeOnDelete();
+            $table->foreignId('id_produit')->constrained('produits')->cascadeOnDelete();
+            $table->integer('quantite')->default(1);
+            $table->decimal('prix_unitaire', 8, 2);
             $table->timestamps();
         });
 

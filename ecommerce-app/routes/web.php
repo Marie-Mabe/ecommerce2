@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\ProduitController;
+use App\Http\Controllers\Admin\CategorieController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth; // <-- Ajoute ça
 
@@ -26,7 +28,7 @@ Route::get('/dashboard', function () {
 
 // Route pour Admin
 Route::get('/admin/dashboard', function () {
-    return view('admin.Admindashboard');
+    return view('admin.layout');
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
 
 // Route pour User
@@ -41,5 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::resource('produits', ProduitController::class);
+    Route::resource('categories', CategorieController::class);
+});
+Route::put('/admin/produits/{id}', [ProduitController::class, 'update'])->name('admin.produits.update');
+
 
 require __DIR__.'/auth.php';
