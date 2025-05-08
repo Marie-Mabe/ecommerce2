@@ -23,7 +23,6 @@ return new class extends Migration
             $table->foreignId('id_categorie')->constrained('categories');
             $table->timestamps();
         });
-
     }
 
     /**
@@ -33,4 +32,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('produits');
     }
-};
+}; 

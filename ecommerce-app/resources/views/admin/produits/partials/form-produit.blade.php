@@ -35,9 +35,28 @@
 </div>
 
 <div class="form-group">
+    <label for="seuil_alerte">Seuil d'alerte stock</label>
+    <input type="number" name="seuil_alerte" class="form-control @error('seuil_alerte') is-invalid @enderror"
+           value="{{ old('seuil_alerte', $produit->seuil_alerte ?? 5) }}" 
+           min="0" required>
+    <small class="form-text text-muted">Vous serez alerté lorsque le stock atteindra ou passera sous ce seuil.</small>
+    @error('seuil_alerte')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="form-group form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="is_perissable" name="is_perissable"
+           {{ old('date_peremption', $produit->date_peremption ?? '') ? 'checked' : '' }}
+           onchange="toggleDatePeremption(this)">
+    <label class="form-check-label" for="is_perissable">Produit périssable</label>
+</div>
+
+<div class="form-group" id="date_peremption_group" style="{{ old('date_peremption', $produit->date_peremption ?? '') ? '' : 'display: none;' }}">
     <label for="date_peremption">Date de péremption</label>
-    <input type="date" name="date_peremption" class="form-control @error('date_peremption') is-invalid @enderror"
-           value="{{ old('date_peremption', $produit->date_peremption ?? '') }}" required>
+    <input type="date" name="date_peremption" id="date_peremption" 
+           class="form-control @error('date_peremption') is-invalid @enderror"
+           value="{{ old('date_peremption', $produit->date_peremption ?? '') }}">
     @error('date_peremption')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
@@ -55,6 +74,22 @@
         @endforeach
     </select>
     @error('id_categorie')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="form-group">
+    <label for="fournisseur_id">Fournisseur</label>
+    <select name="fournisseur_id" class="form-control @error('fournisseur_id') is-invalid @enderror">
+        <option value="">-- Sélectionner un fournisseur --</option>
+        @foreach($fournisseurs as $fournisseur)
+            <option value="{{ $fournisseur->id }}"
+                {{ old('fournisseur_id', $produit->fournisseur_id ?? '') == $fournisseur->id ? 'selected' : '' }}>
+                {{ $fournisseur->nom }}
+            </option>
+        @endforeach
+    </select>
+    @error('fournisseur_id')
         <div class="invalid-feedback">{{ $message }}</div>
     @enderror
 </div>
