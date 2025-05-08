@@ -5,18 +5,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Produit;
 use App\Models\Categorie;
+use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ProduitController extends Controller
 {
+    protected $allowedMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/avif'
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $produits = Produit::with('categorie')
+        $produits = Produit::with(['categorie', 'fournisseur'])
             ->latest()
             ->paginate(10);
             
@@ -29,7 +39,8 @@ class ProduitController extends Controller
     public function create()
     {
         $categories = Categorie::all();
-        return view('admin.produits.create', compact('categories'));
+        $fournisseurs = Fournisseur::where('actif', true)->get();
+        return view('admin.produits.create', compact('categories', 'fournisseurs'));
     }
 
     /**
@@ -37,24 +48,35 @@ class ProduitController extends Controller
      */
     public function store(Request $request)
     {
+        // Vérification du fichier avant validation
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'])) {
+                return back()->withInput()->withErrors(['image' => 'Le type de fichier n\'est pas autorisé. Types acceptés : JPEG, PNG, GIF, WEBP, AVIF']);
+            }
+        }
+
         $validated = $request->validate([
             'libelle' => 'required|string|max:255',
             'marque' => 'required|string|max:255',
             'prixunit' => 'required|numeric|min:0.01',
             'quantite' => 'required|integer|min:0',
-            'date_peremption' => 'required|date|after:today',
+            'seuil_alerte' => 'required|integer|min:0',
+            'date_peremption' => 'nullable|date|after:today',
             'id_categorie' => 'required|exists:categories,id',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'fournisseur_id' => 'nullable|exists:fournisseurs,id',
+            'image' => 'required|file|max:5120',
             'statut' => 'sometimes|boolean',
         ]);
 
         try {
-            // Génération d'un nom de fichier unique
-            $imageName = time() . '_' . Str::slug(pathinfo($request->file('image')->getClientOriginalName(), PATHINFO_FILENAME));
-            $extension = $request->file('image')->getClientOriginalExtension();
-            $path = $request->file('image')->storeAs(
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension();
+            $imageName = time() . '_' . Str::slug($file->getClientOriginalName());
+            
+            $path = $file->storeAs(
                 'produits', 
-                $imageName . '.' . $extension, 
+                $imageName, 
                 'public'
             );
 
@@ -63,8 +85,10 @@ class ProduitController extends Controller
                 'marque' => $validated['marque'],
                 'prixunit' => $validated['prixunit'],
                 'quantite' => $validated['quantite'],
+                'seuil_alerte' => $validated['seuil_alerte'],
                 'date_peremption' => $validated['date_peremption'],
                 'id_categorie' => $validated['id_categorie'],
+                'fournisseur_id' => $validated['fournisseur_id'],
                 'statut' => $request->has('statut'),
                 'image' => $path
             ]);
@@ -86,6 +110,14 @@ class ProduitController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Vérification du fichier avant validation
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'])) {
+                return back()->withInput()->withErrors(['image' => 'Le type de fichier n\'est pas autorisé. Types acceptés : JPEG, PNG, GIF, WEBP, AVIF']);
+            }
+        }
+
         $produit = Produit::findOrFail($id);
         
         $validated = $request->validate([
@@ -93,26 +125,26 @@ class ProduitController extends Controller
             'marque' => 'required|string|max:255',
             'prixunit' => 'required|numeric|min:0.01',
             'quantite' => 'required|integer|min:0',
-            'date_peremption' => 'required|date',
+            'seuil_alerte' => 'required|integer|min:0',
+            'date_peremption' => 'nullable|date',
             'id_categorie' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'fournisseur_id' => 'nullable|exists:fournisseurs,id',
+            'image' => 'nullable|file|max:5120',
             'statut' => 'sometimes|boolean'
         ]);
 
         try {
-            // Gestion de l'image
             if ($request->hasFile('image')) {
-                // Suppression ancienne image
                 if ($produit->image) {
-                    Storage::disk('public')->delete($produit->image);
+                Storage::disk('public')->delete($produit->image);
                 }
                 
-                // Upload nouvelle image
-                $imageName = time() . '_' . Str::slug(pathinfo($request->file('image')->getClientOriginalName(), PATHINFO_FILENAME));
-                $extension = $request->file('image')->getClientOriginalExtension();
-                $path = $request->file('image')->storeAs(
+                $file = $request->file('image');
+                $imageName = time() . '_' . Str::slug($file->getClientOriginalName());
+                
+                $path = $file->storeAs(
                     'produits', 
-                    $imageName . '.' . $extension, 
+                    $imageName, 
                     'public'
                 );
                 $validated['image'] = $path;
@@ -123,8 +155,10 @@ class ProduitController extends Controller
                 'marque' => $validated['marque'],
                 'prixunit' => $validated['prixunit'],
                 'quantite' => $validated['quantite'],
+                'seuil_alerte' => $validated['seuil_alerte'],
                 'date_peremption' => $validated['date_peremption'],
                 'id_categorie' => $validated['id_categorie'],
+                'fournisseur_id' => $validated['fournisseur_id'],
                 'statut' => $request->has('statut'),
                 'image' => $validated['image'] ?? $produit->image
             ]);
@@ -166,6 +200,7 @@ class ProduitController extends Controller
     {
         $produit = Produit::findOrFail($id);
         $categories = Categorie::all();
-        return view('admin.produits.edit', compact('produit', 'categories'));
+        $fournisseurs = Fournisseur::where('actif', true)->get();
+        return view('admin.produits.edit', compact('produit', 'categories', 'fournisseurs'));
     }
 }
