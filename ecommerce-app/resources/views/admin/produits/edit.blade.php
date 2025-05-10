@@ -60,5 +60,19 @@ function confirmUpdate() {
         }
     });
 }
+
+function toggleDatePeremption(checkbox) {
+    const dateGroup = document.getElementById('date_peremption_group');
+    const dateInput = document.getElementById('date_peremption');
+    
+    if (checkbox.checked) {
+        dateGroup.style.display = 'block';
+        dateInput.setAttribute('required', 'required');
+    } else {
+        dateGroup.style.display = 'none';
+        dateInput.removeAttribute('required');
+        dateInput.value = '';
+    }
+}
 </script>
 @endsection

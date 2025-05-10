@@ -3,13 +3,21 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ProduitController;
 use App\Http\Controllers\Admin\CategorieController;
+use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\StockDashboardController;
+use App\Http\Controllers\Admin\FournisseurController;
 use Illuminate\Support\Facades\Route;
+
 use Illuminate\Support\Facades\Auth; // <-- Ajoute ça
 use Illuminate\Support\Facades\ShopController;
 use Illuminate\Support\Facades\AboutController;
 use Illuminate\Support\Facades\ServicesController;
 use Illuminate\Support\Facades\BlogController;
 use Illuminate\Support\Facades\ContactController;
+
+use Illuminate\Support\Facades\Auth;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -52,8 +60,20 @@ Route::middleware('auth')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::resource('produits', ProduitController::class);
     Route::resource('categories', CategorieController::class);
+    Route::resource('fournisseurs', FournisseurController::class);
+    
+    // Routes pour la gestion de stock
+    Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+    Route::get('stock/alerte', [StockController::class, 'alerte'])->name('stock.alerte');
+    Route::get('stock/{produit}/mouvements', [StockController::class, 'mouvements'])->name('stock.mouvements');
+    Route::post('stock/{produit}/ajuster', [StockController::class, 'ajuster'])->name('stock.ajuster');
+    
+    // Route pour le tableau de bord des stocks
+    Route::get('stock/dashboard', [StockDashboardController::class, 'index'])->name('stock.dashboard');
 });
+
 Route::put('/admin/produits/{id}', [ProduitController::class, 'update'])->name('admin.produits.update');
+
 
 // Routes pour l'utilisateur
 Route::prefix('user')->group(function () {
@@ -67,6 +87,15 @@ Route::prefix('user')->group(function () {
     Route::get('/blog', [\App\Http\Controllers\User\BlogController::class, 'index'])->name('user.blog');
     Route::get('/contact', [\App\Http\Controllers\User\ContactController::class, 'index'])->name('user.contact');
     Route::get('/cart', [\App\Http\Controllers\User\CartController::class, 'index'])->name('user.cart');
+});
+
+// Route de test pour l'email
+Route::get('/test-mail', function () {
+    \Mail::raw('Test d\'envoi d\'email', function($message) {
+        $message->to('votre@email.com')
+                ->subject('Test de configuration email');
+    });
+    return 'Email de test envoyé !';
 });
 
 

@@ -21,6 +21,7 @@
                                 <th>Nom</th>
                                 <th>Prix</th>
                                 <th>Stock</th>
+                                <th>Fournisseur</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -31,6 +32,13 @@
                                 <td>{{ $produit->libelle }}</td>
                                 <td>{{ $produit->prixunit }} €</td>
                                 <td>{{ $produit->quantite }}</td>
+                                <td>
+                                    @if($produit->fournisseur)
+                                        {{ $produit->fournisseur->nom }}
+                                    @else
+                                        <span class="text-muted">Non assigné</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.produits.edit', $produit->id) }}" class="btn btn-warning btn-sm">
                                         <i class="ti-pencil"></i> Modifier
@@ -44,6 +52,10 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <div class="mt-3">
+                    {{ $produits->links() }}
                 </div>
             </div>
         </div>
@@ -59,10 +71,10 @@
 
 @section('scripts')
 <script>
-function confirmDelete(productId, productName) {
+function confirmDelete(produitId, produitNom) {
     Swal.fire({
         title: 'Êtes-vous sûr ?',
-        text: `Voulez-vous vraiment supprimer le produit "${productName}" ?`,
+        text: `Voulez-vous vraiment supprimer le produit "${produitNom}" ?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -72,7 +84,7 @@ function confirmDelete(productId, productName) {
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.getElementById('deleteForm');
-            form.action = "{{ route('admin.produits.destroy', '') }}/" + productId;
+            form.action = `{{ route('admin.produits.destroy', '') }}/${produitId}`;
             form.submit();
         }
     });
