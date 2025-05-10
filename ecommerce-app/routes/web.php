@@ -7,7 +7,16 @@ use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\StockDashboardController;
 use App\Http\Controllers\Admin\FournisseurController;
 use Illuminate\Support\Facades\Route;
+
+use Illuminate\Support\Facades\Auth; // <-- Ajoute ça
+use Illuminate\Support\Facades\ShopController;
+use Illuminate\Support\Facades\AboutController;
+use Illuminate\Support\Facades\ServicesController;
+use Illuminate\Support\Facades\BlogController;
+use Illuminate\Support\Facades\ContactController;
+
 use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +49,7 @@ Route::get('/user/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('user.dashboard');
 
 
+
 // Routes pour le profil
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -64,6 +74,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
 Route::put('/admin/produits/{id}', [ProduitController::class, 'update'])->name('admin.produits.update');
 
+
+// Routes pour l'utilisateur
+Route::prefix('user')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [\App\Http\Controllers\User\UserDashboardController::class, 'index'])->name('user.dashboard');
+    
+    // Autres pages
+    Route::get('/shop', [\App\Http\Controllers\User\ShopController::class, 'index'])->name('user.shop');
+    Route::get('/about', [\App\Http\Controllers\User\AboutController::class, 'index'])->name('user.about');
+    Route::get('/service', [\App\Http\Controllers\User\ServicesController::class, 'index'])->name('user.service');
+    Route::get('/blog', [\App\Http\Controllers\User\BlogController::class, 'index'])->name('user.blog');
+    Route::get('/contact', [\App\Http\Controllers\User\ContactController::class, 'index'])->name('user.contact');
+    Route::get('/cart', [\App\Http\Controllers\User\CartController::class, 'index'])->name('user.cart');
+});
+
 // Route de test pour l'email
 Route::get('/test-mail', function () {
     \Mail::raw('Test d\'envoi d\'email', function($message) {
@@ -72,5 +97,6 @@ Route::get('/test-mail', function () {
     });
     return 'Email de test envoyé !';
 });
+
 
 require __DIR__.'/auth.php';
