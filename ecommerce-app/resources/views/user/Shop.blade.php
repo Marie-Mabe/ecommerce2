@@ -1,318 +1,168 @@
-<!-- /*
-* Bootstrap 5
-* Template Name: Furni
-* Template Author: Untree.co
-* Template URI: https://untree.co/
-* License: https://creativecommons.org/licenses/by/3.0/
-*/ -->
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="author" content="Untree.co">
-  <link rel="shortcut icon" href="{{ asset('favicon.png') }}">
+@extends('user.navigation.layout')
 
-  <meta name="description" content="" />
-  <meta name="keywords" content="bootstrap, bootstrap4" />
+@section('tittle', 'Shop')
 
-  <!-- Bootstrap CSS -->
-  <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link href="{{ asset('css/tiny-slider.css') }}" rel="stylesheet">
-  <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-  <title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co</title>
-</head>
-	<body>
+@section('content')
+<style>
+    .product-thumbnail {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
 
-		<!-- Start Header/Navigation -->
-					<!-- Start Header/Navigation -->
-<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+    .search-bar-container {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto;
+
+    }
+
+    .search-bar-container input[type="text"] {
+        padding-right: 120px;
+        width: 2500px;
+    }
+
+    .search-bar-container button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        border: none;
+
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+</style>
+
+<!-- Start Hero Section -->
+<div class="hero py-5">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('user.dashboard') }}">Furni<span>.</span></a>
+        <div class="row justify-content-center align-items-center text-center">
+            <div class="col-lg-8">
+                <div class="">
+                   <form action="{{ route('user.shop') }}" method="GET" class="search-bar-container d-flex align-items-stretch">
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+                        <!-- Menu déroulant des catégories -->
+                        <select name="categorie" class="form-select me-2" onchange="this.form.submit()" style="max-width: 200px; font-size: 14px;">
 
-        <div class="collapse navbar-collapse" id="navbarsFurni">
-            <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-                <li class="nav-item {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('user.dashboard') }}">Home</a>
-                </li>
-                <li class="{{ request()->routeIs('user.shop') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('user.shop') }}">Shop</a>
-                </li>
-                <li class="{{ request()->routeIs('user.about') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('user.about') }}">About us</a>
-                </li>
-                <li class="{{ request()->routeIs('user.contact') ? 'active' : '' }}">
-                    <a class="nav-link" href="{{ route('user.contact') }}">Contact us</a>
-                </li>
-            </ul>
+                            <option value="">Toutes les catégories</option>
+                            @foreach ($categories as $categorie)
+                                <option value="{{ $categorie->id }}" {{ request('categorie') == $categorie->id ? 'selected' : '' }}>
+                                    {{ $categorie->libelle }}
+                                </option>
+                            @endforeach
+                        </select>
 
-            <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-                <li><a class="nav-link" href="#"><img src="{{ asset('images/user.svg') }}"></a></li>
-                <li><a class="nav-link" href="{{ route('user.cart') }}"><img src="{{ asset('images/cart.svg') }}"></a></li>
-            </ul>
+                        <!-- Champ de recherche -->
+                        <input type="text" name="query" class="form-control me-2"
+                            placeholder="Rechercher un produit..." value="{{ request('query') }}">
+
+                        <!-- Bouton de recherche -->
+                        <button type="submit" class="btn btn-secondary px-4">Rechercher</button>
+                    </form>
+
+            </div>
+            </div>
+
+
         </div>
     </div>
-</nav>
-<!-- End Header/Navigation -->
-		<!-- End Header/Navigation -->
+</div>
 
-		<!-- Start Hero Section -->
-		<div class="hero">
+<div class="untree_co-section product-section before-footer-section">
     <div class="container">
-      <div class="row justify-content-between">
-        <div class="col-lg-5">
-          <div class="intro-excerpt">
-            <h1>Shop</h1>
-            <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.</p>
-            <p><a href="{{ url('/shop') }}" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
-          </div>
+        <div class="row">
+            @forelse ($produits as $produit)
+                <div class="col-12 col-md-4 col-lg-3 mb-5">
+                    <a class="product-item" href="{{ route('user.produit.show', $produit->id) }}">
+                        <img src="{{ Storage::url($produit->image) }}" class="img-fluid product-thumbnail" alt="{{ $produit->libelle }}">
+                        <h3 class="product-title">{{ $produit->libelle }}</h3>
+                        <strong class="product-price">{{ number_format($produit->prixunit, 2) }}$</strong>
+                        <span class="icon-cross product-detail-btn"
+                              data-bs-toggle="modal"
+                              data-bs-target="#productDetailModal"
+                              data-id="{{ $produit->id }}"
+                              data-image="{{ Storage::url($produit->image) }}"
+                              data-title="{{ $produit->libelle }}"
+                              data-marque="{{ $produit->marque }}"
+                              data-price="{{ number_format($produit->prixunit, 2) }}$">
+                            <img src="{{ asset('images/cross.svg') }}" class="img-fluid">
+                        </span>
+                    </a>
+                </div>
+            @empty
+                <div class="col-12">
+                    <p class="text-center">Aucun produit disponible pour le moment.</p>
+                </div>
+            @endforelse
         </div>
-        <div class="col-lg-7">
-          <div class="hero-img-wrap">
-            <img src="{{ asset('images/couch.png') }}" class="img-fluid">
-          </div>
+
+        <div class="row">
+            <div class="col-12">
+                {{ $produits->links() }}
+            </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal détails produit -->
+<div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productDetailModalLabel">Détails du produit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
+      <div class="modal-body">
+        <img id="modal-product-image" src="" alt="" class="img-fluid mb-3" style="width: 100%; max-height: 300px; object-fit: cover;">
+        <h4 id="modal-product-title"></h4>
+        <p id="modal-product-marque" class="fw-bold"></p>
+        <p id="modal-product-price" class="fw-bold"></p>
+        <!-- Bouton Ajouter au panier -->
+        <button id="add-to-cart-btn" class="btn btn-primary">Ajouter au panier</button>
+      </div>
+      {{--  <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>  --}}
     </div>
   </div>
-		<!-- End Hero Section -->
+</div>
+@endsection
 
-		
+@section('scripts')
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('js/tiny-slider.js') }}"></script>
+<script src="{{ asset('js/custom.js') }}"></script>
 
-		<div class="untree_co-section product-section before-footer-section">
-		    <div class="container">
-		      	<div class="row">
+<script>
+document.querySelectorAll('.product-detail-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault(); // éviter le comportement par défaut du lien
 
-		      		<!-- Start Column 1 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">											
-							<img src="{{ asset('images/product-3.png') }}" class="img-fluid product-thumbnail"> 
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
+        const image = this.getAttribute('data-image');
+        const title = this.getAttribute('data-title');
+        const marque = this.getAttribute('data-marque');
+        const price = this.getAttribute('data-price');
+        const productId = this.getAttribute('data-id');
 
-							<span class="icon-cross">		
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-					<!-- End Column 1 -->
-						
-					<!-- Start Column 2 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-1.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
+        document.getElementById('modal-product-image').src = image;
+        document.getElementById('modal-product-image').alt = title;
+        document.getElementById('modal-product-title').textContent = title;
+        document.getElementById('modal-product-marque').textContent = 'Marque: ' + marque;
+        document.getElementById('modal-product-price').textContent = price;
 
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-					<!-- End Column 2 -->
+        // Stocker l'id du produit sur le bouton Ajouter au panier
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        addToCartBtn.setAttribute('data-id', productId);
+    });
+});
 
-					<!-- Start Column 3 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-2.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kruzo Aero Chair</h3>
-							<strong class="product-price">$78.00</strong>
-
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div>
-					<!-- End Column 3 -->
-
-					<!-- Start Column 4 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-3.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Ergonomic Chair</h3>
-							<strong class="product-price">$43.00</strong>
-
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div>
-					<!-- End Column 4 -->
-
-
-					<!-- Start Column 1 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-3.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
-
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-					<!-- End Column 1 -->
-						
-					<!-- Start Column 2 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-1.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Nordic Chair</h3>
-							<strong class="product-price">$50.00</strong>
-
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div> 
-					<!-- End Column 2 -->
-
-					<!-- Start Column 3 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-2.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Kruzo Aero Chair</h3>
-							<strong class="product-price">$78.00</strong>
-
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div>
-					<!-- End Column 3 -->
-
-					<!-- Start Column 4 -->
-					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="{{ asset('images/product-3.png') }}" class="img-fluid product-thumbnail">
-							<h3 class="product-title">Ergonomic Chair</h3>
-							<strong class="product-price">$43.00</strong>
-
-							<span class="icon-cross">
-								<img src="{{ asset('images/cross.svg') }}" class="img-fluid">
-							</span>
-						</a>
-					</div>
-					<!-- End Column 4 -->
-
-		      	</div>
-		    </div>
-		</div>
-
-
-		<!-- Start Footer Section -->
-		<footer class="footer-section">
-			<div class="container relative">
-
-				<div class="sofa-img">
-					<img src="{{ asset('images/sofa.png') }}" alt="Image" class="img-fluid">
-				</div>
-
-				<div class="row">
-					<div class="col-lg-8">
-						<div class="subscription-form">
-							<h3 class="d-flex align-items-center"><span class="me-1"><img src="{{ asset('images/envelope-outline.svg') }}" alt="Image" class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
-
-							<form action="#" class="row g-3">
-								<div class="col-auto">
-									<input type="text" class="form-control" placeholder="Enter your name">
-								</div>
-								<div class="col-auto">
-									<input type="email" class="form-control" placeholder="Enter your email">
-								</div>
-								<div class="col-auto">
-									<button class="btn btn-primary">
-										<span class="fa fa-paper-plane"></span>
-									</button>
-								</div>
-							</form>
-
-						</div>
-					</div>
-				</div>
-
-				<div class="row g-5 mb-5">
-					<div class="col-lg-4">
-						<div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Furni<span>.</span></a></div>
-						<p class="mb-4">Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant</p>
-
-						<ul class="list-unstyled custom-social">
-							<li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
-							<li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
-							<li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
-							<li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
-						</ul>
-					</div>
-
-					<div class="col-lg-8">
-						<div class="row links-wrap">
-							<div class="col-6 col-sm-6 col-md-3">
-								<ul class="list-unstyled">
-									<li><a href="#">About us</a></li>
-									<li><a href="#">Contact us</a></li>
-								</ul>
-							</div>
-
-							<div class="col-6 col-sm-6 col-md-3">
-								<ul class="list-unstyled">
-									<li><a href="#">Support</a></li>
-									<li><a href="#">Knowledge base</a></li>
-									<li><a href="#">Live chat</a></li>
-								</ul>
-							</div>
-
-							<div class="col-6 col-sm-6 col-md-3">
-								<ul class="list-unstyled">
-									<li><a href="#">Jobs</a></li>
-									<li><a href="#">Our team</a></li>
-									<li><a href="#">Leadership</a></li>
-									<li><a href="#">Privacy Policy</a></li>
-								</ul>
-							</div>
-
-							<div class="col-6 col-sm-6 col-md-3">
-								<ul class="list-unstyled">
-									<li><a href="#">Nordic Chair</a></li>
-									<li><a href="#">Kruzo Aero</a></li>
-									<li><a href="#">Ergonomic Chair</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-
-				</div>
-
-				<div class="border-top copyright">
-					<div class="row pt-4">
-						<div class="col-lg-6">
-							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed with love by <a href="https://untree.co">Untree.co</a>  Distributed By <a href="https://themewagon.com">ThemeWagon</a> <!-- License information: https://untree.co/license/ -->
-            </p>
-						</div>
-
-						<div class="col-lg-6 text-center text-lg-end">
-							<ul class="list-unstyled d-inline-flex ms-auto">
-								<li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
-								<li><a href="#">Privacy Policy</a></li>
-							</ul>
-						</div>
-
-					</div>
-				</div>
-
-			</div>
-		</footer>
-		<!-- End Footer Section -->	
-
-
-		<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-		<script src="{{ asset('js/tiny-slider.js') }}"></script>
-		<script src="{{ asset('js/custom.js') }}"></script>
-	</body>
-
-</html>
+// Exemple gestion clic sur Ajouter au panier
+document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+    const productId = this.getAttribute('data-id');
+    alert('Produit ajouté au panier : ID = ' + productId);
+    // Ici tu peux faire un appel AJAX pour ajouter au panier côté serveur
+});
+</script>
+@endsection

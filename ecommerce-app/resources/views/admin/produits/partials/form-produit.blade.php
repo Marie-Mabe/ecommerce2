@@ -35,9 +35,9 @@
 </div>
 
 <div class="form-group">
-    <label for="seuil_alerte">Seuil d'alerte stock</label>
+    <label for="seuil_alerte">Seuil alerte stock</label>
     <input type="number" name="seuil_alerte" class="form-control @error('seuil_alerte') is-invalid @enderror"
-           value="{{ old('seuil_alerte', $produit->seuil_alerte ?? 5) }}" 
+           value="{{ old('seuil_alerte', $produit->seuil_alerte ?? 5) }}"
            min="0" required>
     <small class="form-text text-muted">Vous serez alerté lorsque le stock atteindra ou passera sous ce seuil.</small>
     @error('seuil_alerte')
@@ -54,7 +54,7 @@
 
 <div class="form-group" id="date_peremption_group" style="{{ old('date_peremption', $produit->date_peremption ?? '') ? '' : 'display: none;' }}">
     <label for="date_peremption">Date de péremption</label>
-    <input type="date" name="date_peremption" id="date_peremption" 
+    <input type="date" name="date_peremption" id="date_peremption"
            class="form-control @error('date_peremption') is-invalid @enderror"
            value="{{ old('date_peremption', $produit->date_peremption ?? '') }}">
     @error('date_peremption')
@@ -97,7 +97,7 @@
 <div class="form-group">
     <label for="image">Image du produit</label>
     <input type="file" name="image" class="form-control @error('image') is-invalid @enderror">
-    
+
     @if(isset($produit) && $produit->image)
         <div class="mt-2">
             <img src="{{ asset('storage/' . $produit->image) }}" alt="Image actuelle" width="120">
