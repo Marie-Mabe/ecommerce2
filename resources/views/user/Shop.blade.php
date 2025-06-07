@@ -170,7 +170,7 @@
             width: 100%;
             justify-content: center;
         }
-        
+
         .product-thumbnail {
             height: 150px;
         }
@@ -221,7 +221,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="alert alert-info">
-                        Résultats de recherche 
+                        Résultats de recherche
                         @if(request('query'))
                             pour "{{ request('query') }}"
                         @endif
@@ -321,7 +321,7 @@ document.querySelectorAll('.product-detail-btn').forEach(btn => {
 
 document.getElementById('add-to-cart-btn').addEventListener('click', function() {
     const productId = this.getAttribute('data-id');
-    
+
     fetch('{{ route("cart.add") }}', {
         method: 'POST',
         headers: {
