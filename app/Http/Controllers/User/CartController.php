@@ -14,7 +14,7 @@ class CartController extends Controller
         $paniers = Panier::with('produit')
             ->where('id_user', auth()->id())
             ->get();
-            
+
         $total = $paniers->sum(function($item) {
             return $item->prix * $item->quantite;
         });
@@ -22,35 +22,42 @@ class CartController extends Controller
         return view('user.cart', compact('paniers', 'total'));
     }
 
-   public function add(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:produits,id'
-    ]);
+    public function add(Request $request)
+    {
+        try {
+            $request->validate([
+                'product_id' => 'required|exists:produits,id'
+            ]);
 
-    $produit = Produit::find($request->product_id);
+            $produit = Produit::find($request->product_id);
 
-    $panier = Panier::where('id_user', auth()->id())
-        ->where('id_produit', $request->product_id)
-        ->first();
+            $panier = Panier::where('id_user', auth()->id())
+                ->where('id_produit', $request->product_id)
+                ->first();
 
-    if ($panier) {
-        $panier->increment('quantite');
-    } else {
-        Panier::create([
-            'id_user' => auth()->id(),
-            'id_produit' => $request->product_id,
-            'quantite' => 1,
-            'prix' => $produit->prixunit
-        ]);
+            if ($panier) {
+                $panier->increment('quantite');
+            } else {
+                Panier::create([
+                    'id_user' => auth()->id(),
+                    'id_produit' => $request->product_id,
+                    'quantite' => 1,
+                    'prix' => $produit->prixunit
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Produit ajouté au panier'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
-    // Retourne une réponse JSON pour l'AJAX
-    return response()->json([
-        'success' => true,
-        'message' => 'Produit ajouté au panier'
-    ]);
-}
 
     public function remove($id)
     {
@@ -78,5 +85,5 @@ class CartController extends Controller
     return response()->json(['success' => true]);
 }
 
-    
+
 }
