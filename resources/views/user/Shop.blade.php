@@ -183,13 +183,15 @@
         <div class="row justify-content-center">
             <div class="col-lg-10 text-center mb-4">
                 <h2 class="display-6 fw-bold" style="color: #6f42c1;">Notre Boutique en Ligne</h2>
-                <p class="lead">Découvrez nos produits de qualité</p>
+                <p class="lead" style="color:rgba(24, 24, 24, 0.15)">Découvrez nos produits de qualité</p>
             </div>
             <div class="col-lg-8">
                 <form action="{{ route('user.shop') }}" method="GET" class="search-bar-container search-form">
                     <div class="col-md-4">
                         <label for="categorie" class="visually-hidden">Catégorie</label>
-                        <select name="categorie" class="form-select" id="categorie" aria-label="Sélectionner une catégorie">
+                        <select name="categorie" class="form-select" id="categorie"
+                                aria-label="Sélectionner une catégorie"
+                                onchange="this.form.submit()">
                             <option value="">Toutes les catégories</option>
                             @foreach ($categories as $categorie)
                                 <option value="{{ $categorie->id }}" {{ request('categorie') == $categorie->id ? 'selected' : '' }}>
@@ -198,17 +200,19 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="col-md-8 input-group">
                         <label for="search-query" class="visually-hidden">Rechercher un produit</label>
                         <input type="text" name="query" class="form-control" id="search-query"
-                               placeholder="Rechercher un produit..."
-                               value="{{ request('query') }}"
-                               aria-label="Rechercher un produit">
+                            placeholder="Rechercher un produit..."
+                            value="{{ request('query') }}"
+                            aria-label="Rechercher un produit">
                         <button type="submit" class="btn btn-search">
                             <i class="fas fa-search"></i> Rechercher
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

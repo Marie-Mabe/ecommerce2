@@ -14,7 +14,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="{{ asset('css/tiny-slider.css') }}" rel="stylesheet">
   <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-  
+
   <style>
     :root {
       --primary-color: #2c3e50;
@@ -23,7 +23,7 @@
       --light-color: #ecf0f1;
       --dark-color: #2c3e50;
     }
-    
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f8f9fa;
@@ -32,24 +32,29 @@
       flex-direction: column;
       min-height: 100vh;
     }
-    
+
     /* Navigation */
     .custom-navbar {
       background-color: var(--primary-color) !important;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       padding: 15px 0;
+      z-index: 50;
+      position: sticky;
+      top: 0;
+
+
     }
-    
+
     .navbar-brand {
       font-weight: 700;
       font-size: 1.8rem;
       color: white !important;
     }
-    
+
     .navbar-brand span {
       color: var(--secondary-color);
     }
-    
+
     .custom-navbar-nav .nav-link {
       color: white !important;
       font-weight: 500;
@@ -58,90 +63,90 @@
       border-radius: 4px;
       transition: all 0.3s ease;
     }
-    
+
     .custom-navbar-nav .nav-link:hover,
     .custom-navbar-nav .active .nav-link {
       background-color: rgba(255,255,255,0.1);
       color: var(--secondary-color) !important;
     }
-    
+
     .custom-navbar-cta .nav-link {
       padding: 8px;
       margin-left: 10px;
     }
-    
+
     .custom-navbar-cta img {
       width: 24px;
       height: 24px;
       transition: transform 0.3s ease;
     }
-    
+
     .custom-navbar-cta .nav-link:hover img {
       transform: scale(1.1);
     }
-    
+
     /* Dropdown menu styles */
     .dropdown-menu {
       border: none;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    
+
     .dropdown-item {
       padding: 8px 16px;
       transition: all 0.2s;
     }
-    
+
     .dropdown-item:hover {
       background-color: #f8f9fa;
       color: var(--secondary-color);
     }
-    
+
     /* Main content */
     main {
       flex: 1;
       padding: 30px 0;
     }
-    
+
     /* Footer */
     .site-footer {
       background-color: var(--dark-color);
       color: white;
       padding: 40px 0;
     }
-    
+
     /* Boutons */
     .btn-primary {
       background-color: var(--secondary-color);
       border-color: var(--secondary-color);
     }
-    
+
     .btn-primary:hover {
       background-color: #2980b9;
       border-color: #2980b9;
     }
-    
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .navbar-brand {
         font-size: 1.5rem;
       }
-      
+
       .custom-navbar-nav {
         margin-top: 15px;
       }
-      
+
       .custom-navbar-cta {
         margin-top: 15px;
         padding-left: 0;
       }
-      
+
       .dropdown-menu {
         position: static;
         float: none;
       }
     }
   </style>
-  
+
   <title>E-Market - @yield('title', 'Boutique en ligne')</title>
 </head>
 <body>
@@ -193,7 +198,7 @@
             <a class="nav-link position-relative" href="{{ route('user.cart') }}" title="Panier">
               <i class="fas fa-shopping-cart fa-lg"></i>
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {{ Cart::getTotalQuantity() }}
+                {{ $totalPanierQuantite }}
                 <span class="visually-hidden">articles dans le panier</span>
               </span>
             </a>
@@ -215,7 +220,7 @@
   <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('js/tiny-slider.js') }}"></script>
   <script src="{{ asset('js/custom.js') }}"></script>
-  
+
   <!-- Script pour initialiser les dropdowns -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -230,7 +235,7 @@
       });
     });
   </script>
-  
+
   @yield('scripts')
 
 </body>
