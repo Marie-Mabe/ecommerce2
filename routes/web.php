@@ -76,9 +76,7 @@ Route::prefix('user')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('user.cart');
     Route::get('/about', [AboutController::class, 'index'])->name('user.about');
     Route::get('/contact', [ContactController::class, 'index'])->name('user.contact');
-    Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('user.dashboard');
+    
 });
 
 // Détail produit
